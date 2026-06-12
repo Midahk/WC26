@@ -271,18 +271,44 @@ button{cursor:pointer;font-family:var(--font-b)}
 }
 
 /* ============================================================
-   WEEK HEADER
+   DAY PICKER
 ============================================================ */
-.week-head {
-  display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:12px;margin-bottom:8px;
+.day-nav-row{
+  display:flex;align-items:center;gap:8px;margin-bottom:14px;
 }
-.week-title{font-family:var(--font-d);font-size:26px;letter-spacing:2px}
-.week-range{
-  font-size:12px;color:var(--text2);padding:4px 12px;
-  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+.day-arr{
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  color:var(--text2);padding:8px 13px;font-size:16px;line-height:1;
+  transition:all .18s;flex-shrink:0;
 }
-.week-hint{font-size:12px;color:var(--text2);margin-bottom:20px}
+.day-arr:hover{border-color:var(--gold);color:var(--gold)}
+.day-arr:disabled{opacity:.3;cursor:not-allowed}
+.day-strip{
+  display:flex;gap:6px;overflow-x:auto;flex:1;padding:3px 0;
+  scrollbar-width:none;
+}
+.day-strip::-webkit-scrollbar{display:none}
+.day-btn{
+  flex-shrink:0;background:var(--bg2);border:1px solid var(--border);
+  border-radius:10px;padding:8px 11px;cursor:pointer;
+  transition:all .18s;text-align:center;min-width:70px;
+}
+.day-btn:hover{border-color:var(--gold-dim);background:var(--bg3)}
+.day-btn.active{border-color:var(--gold);background:var(--gold-dim)}
+.day-btn.today-mk{border-color:rgba(29,185,84,.35)}
+.day-btn-d{font-family:var(--font-d);font-size:24px;color:var(--text);display:block;line-height:1}
+.day-btn.active .day-btn-d{color:var(--gold)}
+.day-btn-m{font-size:9px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.day-btn-n{font-size:9px;color:var(--text3);margin-top:3px;font-family:var(--font-m)}
+.day-btn.active .day-btn-n{color:var(--gold);opacity:.7}
+.day-today-btn{
+  background:none;border:1px solid rgba(29,185,84,.4);border-radius:8px;
+  color:var(--green);font-size:11px;font-weight:600;letter-spacing:.5px;
+  padding:6px 11px;flex-shrink:0;transition:all .2s;
+}
+.day-today-btn:hover{background:rgba(29,185,84,.1)}
+.day-subtitle{font-size:12px;color:var(--text2);margin-bottom:16px}
+.day-subtitle b{color:var(--gold)}
 
 /* ============================================================
    FAV DETAILED TAB — team panels
@@ -555,12 +581,17 @@ button{cursor:pointer;font-family:var(--font-b)}
 
     <div class="sec-divider"></div>
 
-    <div class="week-head">
-      <h2 class="week-title">📅 MATCHS DE LA SEMAINE</h2>
-      <span class="week-range" id="week-range">—</span>
+    <div class="sec-row" style="margin-bottom:14px">
+      <h2 class="sec-title">📅 MATCHS <b>DU JOUR</b></h2>
     </div>
-    <p class="week-hint">Les rencontres les plus attendues cette semaine, hors vos équipes favorites.</p>
-    <div id="weekly-matches"><div class="spin-wrap"><div class="spin"></div><span>Sélection des chocs de la semaine...</span></div></div>
+    <div class="day-nav-row">
+      <button class="day-arr" id="day-prev" onclick="shiftDay(-1)">&#8592;</button>
+      <div class="day-strip" id="day-strip"></div>
+      <button class="day-arr" id="day-next" onclick="shiftDay(1)">&#8594;</button>
+      <button class="day-today-btn" onclick="goToday()">Aujourd'hui</button>
+    </div>
+    <div class="day-subtitle" id="day-subtitle"></div>
+    <div id="weekly-matches"><div class="spin-wrap"><div class="spin"></div><span>Chargement des matchs...</span></div></div>
   </div>
 
   <!-- PAGE FAVS DÉTAILLÉS -->
@@ -715,6 +746,8 @@ let cachedDetails = {};
 let currentEventId = null;
 let currentMTab = 'stats';
 let tabLoaded = {home:false, favs:false, groups:false, bracket:false};
+let selectedDayStr = null;
+let availDays = [];
 
 /* ─────────────────────────────────────
    ONBOARDING
@@ -784,7 +817,6 @@ function startApp() {
   document.getElementById('onboarding').style.display = 'none';
   document.getElementById('app').classList.add('on');
   buildFavChips();
-  setWeekRange();
   loadAll();
   setInterval(loadAll, 30000);
   setInterval(loadStandings, 300000);
@@ -875,7 +907,8 @@ function updateLivePill() {
 ───────────────────────────────────── */
 function renderHome() {
   renderFavMatches();
-  renderWeekly();
+  initDayPicker();
+  renderDayMatches();
 }
 
 function renderFavMatches() {
@@ -893,37 +926,133 @@ function renderFavMatches() {
   el.innerHTML = `<div class="mgrid fu">${favEvts.map(e => matchCard(e)).join('')}</div>`;
 }
 
-function renderWeekly() {
-  const [ws, we] = getWeekRange();
-  const weekEvts = allEvents.filter(e => {
-    const d = new Date(e.date);
-    return d >= ws && d < we;
-  });
+/* ─────────────────────────────────────
+   DAY PICKER
+───────────────────────────────────── */
+function toLocalDateStr(dateInput) {
+  // Returns 'YYYY-MM-DD' in Africa/Dakar timezone
+  return new Date(dateInput).toLocaleDateString('sv-SE', {timeZone:'Africa/Dakar'});
+}
 
-  // Exclure matchs des favoris
-  const pool = weekEvts.filter(e => !getTeams(e).some(t => matchesFav(t)));
+function initDayPicker() {
+  // Build sorted unique day list from allEvents
+  const daySet = new Set();
+  allEvents.forEach(e => { if (e.date) daySet.add(toLocalDateStr(e.date)); });
+  availDays = [...daySet].sort();
 
-  // Scorer et trier par intérêt
-  const scored = pool.map(e => ({e, s: interestScore(e)}));
-  scored.sort((a,b) => b.s - a.s);
-  const top = scored.slice(0, 8);
-
-  const el = document.getElementById('weekly-matches');
-  if (!top.length) {
-    // Aucun match cette semaine — prendre les plus proches
-    const fallback = allEvents
-      .filter(e => !getTeams(e).some(t => matchesFav(t)))
-      .map(e => ({e, s: interestScore(e)}))
-      .sort((a,b) => b.s - a.s)
-      .slice(0, 8);
-    if (!fallback.length) {
-      el.innerHTML = `<div class="empty"><h3>Pas de match cette semaine</h3><p>Les chocs de la semaine s'afficheront chaque lundi.</p></div>`;
-      return;
-    }
-    el.innerHTML = `<div class="mgrid fu">${fallback.map(({e}) => matchCard(e)).join('')}</div>`;
+  if (!availDays.length) {
+    document.getElementById('day-strip').innerHTML =
+      '<span style="color:var(--text3);font-size:12px;padding:8px 0">Aucune journée disponible</span>';
     return;
   }
-  el.innerHTML = `<div class="mgrid fu">${top.map(({e}) => matchCard(e)).join('')}</div>`;
+
+  // Pick today if available, otherwise nearest future day, else first
+  const todayStr = toLocalDateStr(new Date());
+  if (!selectedDayStr || !availDays.includes(selectedDayStr)) {
+    const future = availDays.filter(d => d >= todayStr);
+    selectedDayStr = future.length ? future[0] : availDays[availDays.length - 1];
+  }
+
+  buildDayStrip();
+  updateDayArrows();
+}
+
+function buildDayStrip() {
+  const strip = document.getElementById('day-strip');
+  const todayStr = toLocalDateStr(new Date());
+  strip.innerHTML = availDays.map(ds => {
+    const d = new Date(ds + 'T12:00:00');
+    const dayEvts = allEvents.filter(e => toLocalDateStr(e.date) === ds);
+    const nonFavCount = dayEvts.filter(e => !getTeams(e).some(t => matchesFav(t))).length;
+    const totalCount = dayEvts.length;
+    const isActive = ds === selectedDayStr;
+    const isToday = ds === todayStr;
+    const label = nonFavCount ? `${nonFavCount} match${nonFavCount>1?'s':''}` : totalCount ? '★ favoris' : '—';
+    return `
+      <button class="day-btn${isActive?' active':''}${isToday?' today-mk':''}"
+              id="daybtn-${ds}" onclick="selectDay('${ds}')">
+        <span class="day-btn-d">${d.getDate()}</span>
+        <div class="day-btn-m">${d.toLocaleDateString('fr-FR',{month:'short'})}</div>
+        <div class="day-btn-n">${label}</div>
+      </button>`;
+  }).join('');
+
+  // Scroll selected into view
+  setTimeout(() => {
+    const btn = strip.querySelector('.day-btn.active');
+    if (btn) btn.scrollIntoView({behavior:'smooth', block:'nearest', inline:'center'});
+  }, 80);
+}
+
+function updateDayArrows() {
+  const idx = availDays.indexOf(selectedDayStr);
+  document.getElementById('day-prev').disabled = idx <= 0;
+  document.getElementById('day-next').disabled = idx >= availDays.length - 1;
+}
+
+function selectDay(ds) {
+  selectedDayStr = ds;
+  buildDayStrip();
+  updateDayArrows();
+  renderDayMatches();
+}
+
+function shiftDay(dir) {
+  if (!availDays.length) return;
+  const idx = availDays.indexOf(selectedDayStr);
+  const ni = Math.max(0, Math.min(availDays.length - 1, idx + dir));
+  selectDay(availDays[ni]);
+}
+
+function goToday() {
+  const todayStr = toLocalDateStr(new Date());
+  if (availDays.includes(todayStr)) {
+    selectDay(todayStr);
+  } else if (availDays.length) {
+    // Find nearest
+    const nearest = availDays.reduce((a, b) =>
+      Math.abs(new Date(b) - new Date(todayStr)) < Math.abs(new Date(a) - new Date(todayStr)) ? b : a
+    );
+    selectDay(nearest);
+  }
+}
+
+function renderDayMatches() {
+  const el = document.getElementById('weekly-matches');
+  const sub = document.getElementById('day-subtitle');
+
+  if (!selectedDayStr) {
+    el.innerHTML = `<div class="empty"><h3>Sélectionnez un jour ci-dessus</h3></div>`;
+    return;
+  }
+
+  const todayStr = toLocalDateStr(new Date());
+  const d = new Date(selectedDayStr + 'T12:00:00');
+  const isToday = selectedDayStr === todayStr;
+
+  const dayFmt = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+  const dayLabel = isToday ? `aujourd'hui — ${dayFmt}` : dayFmt;
+
+  const allDay = allEvents.filter(e => toLocalDateStr(e.date) === selectedDayStr);
+  const nonFav = allDay.filter(e => !getTeams(e).some(t => matchesFav(t)));
+  const favDay = allDay.filter(e => getTeams(e).some(t => matchesFav(t)));
+
+  if (!allDay.length) {
+    sub.innerHTML = '';
+    el.innerHTML = `<div class="empty"><h3>Aucun match prévu</h3><p>${dayFmt} — Pas de match programmé pour cette journée.</p></div>`;
+    return;
+  }
+
+  sub.innerHTML = `<b>${nonFav.length}</b> match${nonFav.length>1?'s':''} ${dayLabel}${favDay.length ? ` · <span style="color:var(--gold)">${favDay.length} match${favDay.length>1?'s':''} de vos favoris ci-dessus</span>` : ''}`;
+
+  if (!nonFav.length) {
+    el.innerHTML = `<div class="empty"><h3>Tous les matchs du jour sont dans vos favoris !</h3><p>Consultez la section "Mes équipes en action" ci-dessus.</p></div>`;
+    return;
+  }
+
+  // Sort chronologically
+  const sorted = [...nonFav].sort((a, b) => new Date(a.date) - new Date(b.date));
+  el.innerHTML = `<div class="mgrid fu">${sorted.map(e => matchCard(e)).join('')}</div>`;
 }
 
 /* ─────────────────────────────────────
@@ -1283,35 +1412,60 @@ function renderMTab(det, ev) {
 }
 
 function renderMStats(det, el) {
-  const stats = det?.gamepackageJSON?.statistics || det?.statistics || [];
-  if (!stats.length || !stats[0]?.stats?.length) {
+  // ESPN summary: stats live in boxScore.teams[].statistics OR gamepackageJSON.statistics[].stats
+  let h = [], a = [];
+  const bsTeams = det?.boxScore?.teams || [];
+  if (bsTeams.length >= 2) {
+    h = bsTeams[0]?.statistics || [];
+    a = bsTeams[1]?.statistics || [];
+  } else {
+    const gStats = det?.gamepackageJSON?.statistics || det?.statistics || [];
+    h = gStats[0]?.stats || gStats[0]?.statistics || [];
+    a = gStats[1]?.stats || gStats[1]?.statistics || [];
+  }
+
+  // Filter to meaningful stats (exclude empty / zero-zero rows)
+  const meaningful = h.filter(s => s.displayValue && s.displayValue !== '0/0');
+
+  if (!meaningful.length) {
     el.innerHTML = `<div class="empty"><h3>Stats disponibles en match</h3><p>Possession, tirs, fautes, corners et plus encore s'afficheront ici pendant et après le match.</p></div>`;
     return;
   }
-  const h = stats[0]?.stats || [];
-  const a = stats[1]?.stats || [];
+
+  // Label map (fallback to ESPN's own label field)
   const labels = {
-    possessionPct:'Possession (%)',shotsTotal:'Tirs',shotsOnTarget:'Tirs cadrés',
-    foulsCommitted:'Fautes',cornerKicks:'Corners',yellowCards:'Cartons Jaunes',
-    redCards:'Cartons Rouges',offsides:'Hors-jeux',saves:'Arrêts du Gardien',passesCompletedPct:'Passes réussies (%)'
+    possessionPct:'Possession (%)', shotsTotal:'Tirs au but',
+    shotsOnTarget:'Tirs cadrés', foulsCommitted:'Fautes',
+    cornerKicks:'Corners', yellowCards:'Cartons Jaunes',
+    redCards:'Cartons Rouges', offsides:'Hors-jeux',
+    saves:'Arrêts du gardien', passingAccuracy:'Passes réussies (%)',
+    blockedShots:'Tirs bloqués', totalPasses:'Passes totales',
+    bigChances:'Grosses occasions',
   };
-  const rows = h.slice(0,9).map((s,i) => {
+
+  const rows = meaningful.map((s, i) => {
+    const astat = a.find(x => x.name === s.name) || a[i] || {};
     const lbl = labels[s.name] || s.label || s.name;
-    const hv = parseFloat(s.displayValue)||0;
-    const av = parseFloat(a[i]?.displayValue)||0;
-    const tot = (hv+av)||1;
-    const hw = ((hv/tot)*100).toFixed(0);
+    const hRaw = s.displayValue || '0';
+    const aRaw = astat.displayValue || '0';
+    const hv = parseFloat(hRaw) || 0;
+    const av = parseFloat(aRaw) || 0;
+    const tot = (hv + av) || 1;
+    const hw = Math.round((hv / tot) * 100);
     return `
       <div class="stat-block">
         <div class="stat-lbl">${lbl}</div>
         <div class="stat-row2">
-          <div class="sv sl">${s.displayValue||'0'}</div>
-          <div><div class="sbar"><div class="sb-h" style="width:${hw}%"></div><div class="sb-a" style="width:${100-hw}%"></div></div></div>
-          <div class="sv sr">${a[i]?.displayValue||'0'}</div>
+          <div class="sv sl">${hRaw}</div>
+          <div><div class="sbar">
+            <div class="sb-h" style="width:${hw}%"></div>
+            <div class="sb-a" style="width:${100-hw}%"></div>
+          </div></div>
+          <div class="sv sr">${aRaw}</div>
         </div>
       </div>`;
   }).join('');
-  el.innerHTML = rows || `<div class="empty"><h3>Données non disponibles</h3></div>`;
+  el.innerHTML = rows;
 }
 
 function renderMLineup(det, el) {
@@ -1343,33 +1497,73 @@ function renderMLineup(det, el) {
 }
 
 function renderMEvents(det, ev, el) {
-  const plays = det?.gamepackageJSON?.plays || det?.plays || [];
-  const goals = plays.filter(p => {
-    const t = (p.type?.id||'');
-    const tx = (p.text||'').toLowerCase();
-    return t==='27'||tx.includes('goal')||tx.includes('but')||tx.includes('penalty scored')||tx.includes('own goal');
+  // ESPN summary: scoringPlays = goals, keyPlays = cards+subs, plays = all
+  const scoringPlays = det?.scoringPlays || [];
+  const keyPlays     = det?.keyPlays || [];
+  const allPlays     = det?.plays || det?.gamepackageJSON?.plays || [];
+
+  // ── Goals ──────────────────────────────────────────────
+  let goals = [];
+  if (scoringPlays.length) {
+    // scoringPlays is the most reliable source for goals
+    goals = scoringPlays.map(p => ({...p, _etype:'goal'}));
+  } else {
+    // Fallback: filter allPlays for goal-type events
+    goals = allPlays.filter(p => {
+      const tid = p.type?.id || '';
+      const tt  = (p.type?.text || p.text || '').toLowerCase();
+      return tid === '27' || tt.includes('goal') || tt.includes('scores') || tt.includes('penalty scored');
+    }).map(p => ({...p, _etype:'goal'}));
+  }
+
+  // ── Cards ──────────────────────────────────────────────
+  const cardSrc = keyPlays.length ? keyPlays : allPlays;
+  const cards = cardSrc.filter(p => {
+    const tid = p.type?.id || '';
+    const tt  = (p.type?.text || '').toLowerCase();
+    return tid === '38' || tid === '39' || tid === '44' ||
+           tt.includes('yellow card') || tt.includes('red card');
+  }).map(p => ({
+    ...p,
+    _etype: (p.type?.id === '39' || (p.type?.text||'').toLowerCase().includes('red')) ? 'redcard' : 'yellowcard'
+  }));
+
+  // ── Subs (from keyPlays if present) ───────────────────
+  const subs = keyPlays.filter(p => {
+    const tid = p.type?.id || '';
+    const tt  = (p.type?.text || '').toLowerCase();
+    return tid === '35' || tt.includes('substitution');
+  }).map(p => ({...p, _etype:'sub'}));
+
+  // ── Merge + sort ──────────────────────────────────────
+  const all = [...goals, ...cards, ...subs];
+  all.sort((a, b) => {
+    const ta = a.clock?.value ?? ((a.period?.number||1)-1)*5400 + 9999;
+    const tb = b.clock?.value ?? ((b.period?.number||1)-1)*5400 + 9999;
+    return ta - tb;
   });
-  const cards = plays.filter(p => {
-    const t = (p.type?.id||'');
-    return t==='38'||t==='39'||t==='44';
-  });
-  const all = [...goals.map(p=>({...p,etype:'goal'})), ...cards.map(p=>({...p,etype:'card'}))];
-  all.sort((a,b) => (a.clock?.seconds||0)-(b.clock?.seconds||0));
 
   if (!all.length) {
-    el.innerHTML = `<div class="empty"><h3>Pas d'événements</h3><p>Buts, cartons et penaltys s'afficheront ici en temps réel pendant le match.</p></div>`;
+    el.innerHTML = `<div class="empty"><h3>Pas d'événements</h3><p>Buts, cartons et remplacements s'afficheront ici en temps réel pendant le match.</p></div>`;
     return;
   }
-  const ico = {goal:'⚽',card:'🟨'};
-  el.innerHTML = `<div class="evt-list">${all.map(p=>`
-    <div class="evt-item">
-      <div class="emin">${p.clock?.displayValue||p.period?.number||'—'}′</div>
-      <div class="eico">${p.etype==='goal'?'⚽':'🟨'}</div>
-      <div>
-        <div class="edesc">${p.text||'Événement'}</div>
-        <div class="eteam">${p.team?.displayName||''}</div>
-      </div>
-    </div>`).join('')}</div>`;
+
+  const icos = {goal:'⚽', yellowcard:'🟨', redcard:'🟥', sub:'🔄'};
+  el.innerHTML = `<div class="evt-list">${all.map(p => {
+    const ico = icos[p._etype] || '●';
+    const min = p.clock?.displayValue || (p.period?.number ? `${p.period.number > 1 ? '45+' : ''}` : '—');
+    const txt = p.text || p.type?.text || 'Événement';
+    const team = p.team?.displayName || p.team?.shortDisplayName || '';
+    return `
+      <div class="evt-item">
+        <div class="emin">${min}′</div>
+        <div class="eico">${ico}</div>
+        <div>
+          <div class="edesc">${txt}</div>
+          ${team ? `<div class="eteam">${team}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('')}</div>`;
 }
 
 /* ─────────────────────────────────────
@@ -1431,23 +1625,6 @@ function fmtDate(d) {
     day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',
     timeZone:'Africa/Dakar'
   });
-}
-
-function getWeekRange() {
-  const now = new Date();
-  const dow = now.getDay();
-  const mon = new Date(now);
-  mon.setDate(now.getDate() - (dow===0?6:dow-1));
-  mon.setHours(0,0,0,0);
-  const sun = new Date(mon);
-  sun.setDate(mon.getDate()+7);
-  return [mon,sun];
-}
-
-function setWeekRange() {
-  const [ws,we] = getWeekRange();
-  const fmt = d => d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
-  document.getElementById('week-range').textContent = `${fmt(ws)} — ${fmt(new Date(we-86400000))}`;
 }
 
 function statMap(arr) {
