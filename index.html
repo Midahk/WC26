@@ -3,805 +3,762 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🚨 CAGNOTTE URGENCE MÉDICALE</title>
+<title>Dakar—Gorée · Liaison optique en espace libre</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --bg-deep:#070D14;
+  --bg-panel:#0E1826;
+  --bg-panel-2:#12202F;
+  --ink:#EDEAE0;
+  --ink-dim:#93A6B5;
+  --ink-faint:#5B6B79;
+  --beam:#FF5A36;
+  --beam-glow:#FFB199;
+  --gold:#D9A441;
+  --teal:#3FA0A8;
+  --danger:#E6484B;
+  --ok:#3FA796;
+  --line:rgba(237,234,224,0.10);
+  --line-strong:rgba(237,234,224,0.22);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--bg-deep);
+  color:var(--ink);
+  font-family:'Inter',sans-serif;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Fraunces',serif;font-weight:700;margin:0;letter-spacing:-0.01em;}
+.mono{font-family:'JetBrains Mono',monospace;}
+a{color:inherit;}
+::selection{background:var(--beam);color:#0E1826;}
+@media (prefers-reduced-motion: reduce){*{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;}}
 
-  :root {
-    --pink:   #FF3C8E;
-    --blue:   #00B4FF;
-    --yellow: #FFD93D;
-    --red:    #FF2D2D;
-    --dark:   #080810;
-    --card:   #10101E;
-    --border: #1E1E34;
-    --text:   #E8E8F0;
-    --muted:  #7070A0;
-  }
+/* ---------- layout helpers ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  color:var(--gold);
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:14px;
+}
+.eyebrow::before{content:"";width:22px;height:1px;background:var(--gold);}
+section{padding:100px 0;border-top:1px solid var(--line);}
+section:first-of-type{border-top:none;}
+.section-head{max-width:640px;margin-bottom:56px;}
+.section-head p{color:var(--ink-dim);font-size:17px;margin-top:14px;}
+.section-head h2{font-size:clamp(28px,4vw,42px);}
 
-  html { scroll-behavior: smooth; }
+/* ---------- nav ---------- */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:rgba(7,13,20,0.82);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:16px;padding-bottom:16px;}
+.brand{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:0.08em;display:flex;align-items:center;gap:10px;}
+.brand-dot{width:7px;height:7px;border-radius:50%;background:var(--beam);box-shadow:0 0 8px var(--beam);animation:pulse 2.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+.nav-links{display:flex;gap:28px;font-size:13px;color:var(--ink-dim);}
+.nav-links a{text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-toggle{display:none;}
+@media (max-width:820px){.nav-links{display:none;}}
 
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ---------- hero ---------- */
+.hero{
+  min-height:100svh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding-top:120px;padding-bottom:60px;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 30% 20%, rgba(63,160,168,0.10), transparent 60%),
+             radial-gradient(ellipse 50% 40% at 80% 70%, rgba(217,164,65,0.06), transparent 60%);
+  pointer-events:none;
+}
+.hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:56px;align-items:center;position:relative;z-index:1;}
+@media (max-width:960px){.hero-grid{grid-template-columns:1fr;}}
+.hero h1{font-size:clamp(36px,5.6vw,64px);line-height:1.02;}
+.hero h1 em{font-style:normal;color:var(--beam);}
+.hero-lede{color:var(--ink-dim);font-size:18px;max-width:480px;margin-top:22px;}
+.hero-stats{display:flex;gap:36px;margin-top:40px;flex-wrap:wrap;}
+.hero-stat b{display:block;font-family:'Fraunces',serif;font-size:26px;color:var(--ink);}
+.hero-stat span{font-size:12px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.08em;}
 
-  /* ── SCANLINES overlay ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 3px,
-      rgba(0,0,0,.08) 3px,
-      rgba(0,0,0,.08) 4px
-    );
-    pointer-events: none;
-    z-index: 999;
-  }
+/* weather toggle */
+.weather-picker{display:flex;gap:8px;margin-top:36px;flex-wrap:wrap;}
+.weather-btn{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  background:var(--bg-panel);border:1px solid var(--line-strong);color:var(--ink-dim);
+  padding:9px 14px;border-radius:100px;cursor:pointer;transition:all .2s;
+}
+.weather-btn:hover{border-color:var(--gold);color:var(--ink);}
+.weather-btn.active{background:var(--beam);border-color:var(--beam);color:#160805;font-weight:700;}
 
-  /* ── HEADER AMBULANCE ── */
-  .alert-bar {
-    background: var(--red);
-    padding: 8px 0;
-    text-align: center;
-    font-family: 'Anton', sans-serif;
-    font-size: .85rem;
-    letter-spacing: .15em;
-    animation: blink-bar 1.2s step-start infinite;
-  }
-  @keyframes blink-bar {
-    0%,100% { background: var(--red); }
-    50%      { background: #8B0000; }
-  }
+/* hero scene svg */
+.scene-box{position:relative;}
+.scene-readout{
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--line);border:1px solid var(--line);margin-top:18px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+}
+.scene-readout div{background:var(--bg-panel);padding:14px 16px;}
+.scene-readout .k{color:var(--ink-faint);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-size:10px;}
+.scene-readout .v{font-size:16px;color:var(--ink);}
+.scene-readout .v.warn{color:var(--danger);}
+.scene-readout .v.ok{color:var(--ok);}
 
-  /* ── HERO ── */
-  .hero {
-    position: relative;
-    text-align: center;
-    padding: 80px 24px 60px;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,60,142,.18) 0%, transparent 70%),
-      radial-gradient(ellipse 60% 40% at 20% 100%, rgba(0,180,255,.12) 0%, transparent 60%);
-    pointer-events: none;
-  }
+#beamLine{transition:stroke .5s ease, stroke-width .5s ease, opacity .5s ease;}
+.particle{transition:opacity .5s ease;}
 
-  .hero-eyebrow {
-    display: inline-block;
-    background: rgba(255,45,45,.15);
-    border: 1px solid var(--red);
-    color: var(--red);
-    font-size: .7rem;
-    letter-spacing: .25em;
-    padding: 5px 16px;
-    border-radius: 999px;
-    margin-bottom: 24px;
-    text-transform: uppercase;
-    font-weight: 600;
-  }
+/* ---------- cards / grids ---------- */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+@media (max-width:760px){.grid-3{grid-template-columns:1fr;}.grid-2{grid-template-columns:1fr;}}
+.cell{background:var(--bg-panel);padding:28px;}
+.cell h4{font-size:17px;margin-bottom:10px;}
+.cell p{color:var(--ink-dim);font-size:14.5px;}
+.cell .tag{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:12px;}
 
-  .hero h1 {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(2.8rem, 8vw, 6.5rem);
-    line-height: 1;
-    background: linear-gradient(135deg, var(--pink) 0%, var(--blue) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 16px;
-  }
+/* stat strip */
+.stat-strip{display:flex;flex-wrap:wrap;gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:60px;}
+.stat-strip .cell{flex:1;min-width:170px;text-align:left;}
+.stat-strip .cell b{font-family:'Fraunces',serif;font-size:30px;display:block;color:var(--beam);}
+.stat-strip .cell span{font-size:12.5px;color:var(--ink-dim);}
 
-  .hero-sub {
-    font-size: clamp(1rem, 2.5vw, 1.35rem);
-    color: var(--muted);
-    max-width: 560px;
-    margin: 0 auto 36px;
-    line-height: 1.6;
-    font-weight: 300;
-  }
-  .hero-sub strong { color: var(--yellow); font-weight: 700; }
+/* fiber cross-section */
+.fiber-diagram{display:flex;justify-content:center;padding:20px 0;}
 
-  /* ── HEALTH BAR ── */
-  .health-block {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 48px;
-  }
-  .health-label {
-    font-size: .7rem;
-    letter-spacing: .2em;
-    color: var(--red);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
-  .health-bar-outer {
-    width: 260px;
-    height: 14px;
-    background: rgba(255,255,255,.08);
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,.12);
-    overflow: hidden;
-  }
-  .health-bar-inner {
-    height: 100%;
-    width: 7%;
-    background: linear-gradient(90deg, var(--red), #FF6B35);
-    border-radius: 999px;
-    animation: pulse-bar 1.8s ease-in-out infinite;
-    position: relative;
-  }
-  .health-bar-inner::after {
-    content: '';
-    position: absolute; right: 0; top: 0; bottom: 0;
-    width: 20px;
-    background: rgba(255,255,255,.4);
-    border-radius: 999px;
-    filter: blur(4px);
-  }
-  @keyframes pulse-bar {
-    0%,100% { opacity: 1; }
-    50%      { opacity: .6; }
-  }
-  .health-val { font-size: .75rem; color: var(--red); font-weight: 700; }
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:14px;}
+th,td{text-align:left;padding:12px 14px;border-bottom:1px solid var(--line);}
+th{font-family:'JetBrains Mono',monospace;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);font-weight:500;}
+td{color:var(--ink-dim);}
+td.hl{color:var(--ink);font-family:'JetBrains Mono',monospace;}
+tr:last-child td{border-bottom:none;}
 
-  /* ── SECTION ── */
-  section { max-width: 760px; margin: 0 auto; padding: 0 24px 64px; }
+/* accordion */
+.accordion-item{border-bottom:1px solid var(--line);}
+.accordion-item:first-child{border-top:1px solid var(--line);}
+.accordion-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 0;cursor:pointer;
+}
+.accordion-head h4{font-size:16px;font-weight:600;}
+.accordion-head .plus{font-family:'JetBrains Mono',monospace;color:var(--gold);font-size:18px;transition:transform .25s;}
+.accordion-item.open .plus{transform:rotate(45deg);}
+.accordion-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.accordion-item.open .accordion-body{max-height:600px;}
+.accordion-body-inner{padding-bottom:22px;color:var(--ink-dim);font-size:14.5px;max-width:760px;}
+.accordion-body-inner ul{padding-left:18px;}
+.accordion-body-inner li{margin-bottom:6px;}
 
-  .section-title {
-    font-family: 'Anton', sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: .05em;
-    margin-bottom: 20px;
-    color: var(--text);
-  }
-  .section-title span { color: var(--pink); }
+/* OTDR trace */
+.otdr-wrap{background:var(--bg-panel);border:1px solid var(--line);padding:32px;}
+.otdr-legend{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 24px;margin-top:24px;font-size:13px;color:var(--ink-dim);}
+@media (max-width:700px){.otdr-legend{grid-template-columns:1fr;}}
+.otdr-legend div{display:flex;gap:10px;align-items:flex-start;}
+.otdr-legend .num{font-family:'JetBrains Mono',monospace;color:var(--beam);flex-shrink:0;}
 
-  /* ── LETTRE ── */
-  .letter-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 36px 32px;
-    line-height: 1.8;
-    font-size: .95rem;
-    color: #C0C0D8;
-    position: relative;
-    overflow: hidden;
-  }
-  .letter-card::before {
-    content: '"';
-    position: absolute;
-    top: -20px; left: 16px;
-    font-size: 10rem;
-    font-family: 'Anton', sans-serif;
-    color: rgba(255,60,142,.06);
-    line-height: 1;
-    pointer-events: none;
-  }
-  .letter-card p { margin-bottom: 16px; }
-  .letter-card p:last-child { margin-bottom: 0; }
-  .letter-card strong { color: var(--yellow); }
-  .letter-card em { color: var(--pink); font-style: normal; font-weight: 600; }
-  .letter-card .sign {
-    margin-top: 24px;
-    font-family: 'Courier Prime', monospace;
-    font-style: italic;
-    color: var(--muted);
-    font-size: .9rem;
-  }
+/* enemy cards (météo) */
+.enemy-card{background:var(--bg-panel);border:1px solid var(--line);padding:26px;position:relative;}
+.enemy-card .freq{
+  font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);
+  margin-bottom:8px;display:block;
+}
+.enemy-card h4{font-size:18px;margin-bottom:10px;}
+.enemy-card p{color:var(--ink-dim);font-size:14px;}
+.enemy-bar{height:5px;background:rgba(255,255,255,0.06);margin-top:16px;overflow:hidden;}
+.enemy-bar i{display:block;height:100%;background:var(--beam);}
 
-  /* ── ORDONNANCE ── */
-  .ordonnance {
-    background: #FAFAF5;
-    border-radius: 12px;
-    padding: 32px 28px;
-    color: #222;
-    font-family: 'Courier Prime', monospace;
-    position: relative;
-    box-shadow: 0 0 0 3px var(--pink), 0 24px 60px rgba(255,60,142,.25);
-  }
-  .ordo-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding-bottom: 16px;
-    border-bottom: 2px solid #DDD;
-    margin-bottom: 20px;
-  }
-  .ordo-doctor { font-size: .8rem; line-height: 1.7; }
-  .ordo-doctor strong { font-size: 1rem; color: #000; }
-  .ordo-stamp {
-    width: 80px; height: 80px;
-    border-radius: 50%;
-    border: 3px solid var(--red);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--red);
-    font-size: .45rem;
-    font-weight: 700;
-    letter-spacing: .05em;
-    line-height: 1.4;
-    text-transform: uppercase;
-    transform: rotate(-12deg);
-    flex-shrink: 0;
-  }
-  .ordo-patient {
-    font-size: .8rem;
-    background: #F0F0E8;
-    padding: 10px 14px;
-    border-radius: 6px;
-    margin-bottom: 20px;
-    color: #444;
-  }
-  .ordo-rx {
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--red);
-    margin-bottom: 16px;
-    font-family: 'Courier Prime', monospace;
-  }
-  .ordo-item {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px dashed #DDD;
-  }
-  .ordo-item:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-  .ordo-num {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--red);
-    min-width: 28px;
-    line-height: 1;
-    padding-top: 2px;
-  }
-  .ordo-item-title { font-weight: 700; font-size: .9rem; margin-bottom: 3px; }
-  .ordo-item-desc { font-size: .78rem; color: #666; line-height: 1.6; }
-  .ordo-price {
-    margin-left: auto;
-    font-weight: 700;
-    font-size: .85rem;
-    color: #000;
-    white-space: nowrap;
-    padding-left: 12px;
-  }
-  .ordo-footer {
-    margin-top: 20px;
-    padding-top: 16px;
-    border-top: 2px solid #DDD;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: .78rem;
-    color: #888;
-  }
-  .ordo-total {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #000;
-  }
+/* calculators */
+.calc{
+  background:var(--bg-panel);border:1px solid var(--line-strong);
+  padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:40px;
+}
+@media (max-width:760px){.calc{grid-template-columns:1fr;}}
+.calc-controls label{display:block;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-dim);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;}
+.calc-controls .row{margin-bottom:26px;}
+.calc-controls input[type=range]{width:100%;accent-color:var(--beam);}
+.calc-controls .valline{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:13px;margin-bottom:6px;color:var(--ink);}
+.calc-out{display:flex;flex-direction:column;justify-content:center;gap:18px;}
+.out-line{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px dashed var(--line-strong);padding-bottom:10px;}
+.out-line .l{color:var(--ink-dim);font-size:13px;}
+.out-line .v{font-family:'JetBrains Mono',monospace;font-size:20px;}
+.out-line .v.big{font-size:30px;color:var(--beam);}
+.status-pill{
+  font-family:'JetBrains Mono',monospace;font-size:12px;text-transform:uppercase;letter-spacing:.06em;
+  padding:8px 14px;display:inline-block;text-align:center;border-radius:2px;
+}
+.status-pill.ok{background:rgba(63,167,150,0.15);color:var(--ok);border:1px solid var(--ok);}
+.status-pill.bad{background:rgba(230,72,75,0.15);color:var(--danger);border:1px solid var(--danger);}
 
-  /* ── PROGRESS ── */
-  .progress-block {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 32px;
-  }
-  .progress-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 12px;
-  }
-  .progress-amount { font-family: 'Anton', sans-serif; font-size: 2rem; color: var(--pink); }
-  .progress-goal { font-size: .85rem; color: var(--muted); }
-  .progress-outer {
-    width: 100%;
-    height: 20px;
-    background: rgba(255,255,255,.06);
-    border-radius: 999px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    margin-bottom: 14px;
-  }
-  .progress-inner {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, var(--pink), var(--blue));
-    border-radius: 999px;
-    transition: width 2s cubic-bezier(.22,1,.36,1);
-    position: relative;
-  }
-  .progress-inner::after {
-    content: '';
-    position: absolute; right: 0; top: 0; bottom: 0;
-    width: 30px;
-    background: rgba(255,255,255,.35);
-    filter: blur(8px);
-  }
-  .progress-stats {
-    display: flex;
-    gap: 24px;
-    font-size: .8rem;
-    color: var(--muted);
-  }
-  .progress-stats strong { color: var(--text); }
+/* availability bars */
+.avail-chart{display:flex;flex-direction:column;gap:18px;margin-top:10px;}
+.avail-row{display:grid;grid-template-columns:170px 1fr 90px;align-items:center;gap:16px;}
+.avail-row .lbl{font-size:13.5px;color:var(--ink-dim);}
+.avail-track{height:14px;background:rgba(255,255,255,0.05);position:relative;}
+.avail-fill{height:100%;background:linear-gradient(90deg,var(--beam),var(--gold));}
+.avail-val{font-family:'JetBrains Mono',monospace;font-size:13px;text-align:right;}
+@media (max-width:640px){.avail-row{grid-template-columns:1fr;gap:6px;}.avail-val{text-align:left;}}
 
-  /* ── WAVE CTA ── */
-  .cta-block {
-    text-align: center;
-    padding: 48px 24px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  .cta-block::before {
-    content: '';
-    position: absolute; inset: -2px;
-    background: linear-gradient(135deg, var(--pink), var(--blue), var(--pink));
-    border-radius: 22px;
-    z-index: -1;
-    background-size: 200% 200%;
-    animation: grad-shift 4s ease infinite;
-  }
-  @keyframes grad-shift {
-    0%,100% { background-position: 0% 50%; }
-    50%      { background-position: 100% 50%; }
-  }
-  .cta-pretitle {
-    font-size: .7rem;
-    letter-spacing: .25em;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-  .cta-title {
-    font-family: 'Anton', sans-serif;
-    font-size: clamp(1.8rem, 5vw, 3rem);
-    margin-bottom: 8px;
-  }
-  .cta-sub {
-    font-size: .9rem;
-    color: var(--muted);
-    max-width: 400px;
-    margin: 0 auto 36px;
-    line-height: 1.6;
-  }
+/* pitch */
+.pitch-panel{
+  background:linear-gradient(160deg,var(--bg-panel-2),var(--bg-panel));
+  border:1px solid var(--line-strong);
+  padding:48px;position:relative;
+}
+.pitch-panel::before{content:"“";position:absolute;top:10px;left:24px;font-family:'Fraunces',serif;font-size:110px;color:rgba(217,164,65,0.14);line-height:1;}
+.pitch-text{font-family:'Fraunces',serif;font-size:19px;line-height:1.65;color:var(--ink);position:relative;z-index:1;max-width:820px;}
+.pitch-text p{margin-bottom:18px;}
 
-  /* Wave button */
-  .wave-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    background: linear-gradient(135deg, #00A8E8, #0066CC);
-    color: #fff;
-    text-decoration: none;
-    padding: 18px 40px;
-    border-radius: 14px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    transition: transform .2s, box-shadow .2s;
-    box-shadow: 0 8px 32px rgba(0,168,232,.4);
-    position: relative;
-    overflow: hidden;
-  }
-  .wave-btn::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,.2) 0%, transparent 60%);
-    border-radius: 14px;
-  }
-  .wave-btn:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 16px 48px rgba(0,168,232,.55);
-  }
-  .wave-btn:active { transform: translateY(0) scale(.98); }
+/* numbers grid for chiffres */
+.chiffres-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px;}
+@media (max-width:860px){.chiffres-grid{grid-template-columns:repeat(2,1fr);}}
+.chiffre{background:var(--bg-panel);padding:22px;}
+.chiffre b{font-family:'JetBrains Mono',monospace;font-size:20px;color:var(--gold);display:block;margin-bottom:4px;}
+.chiffre span{font-size:12px;color:var(--ink-faint);}
 
-  /* Wave logo SVG inline */
-  .wave-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 10px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-  .wave-logo img { width: 36px; height: 36px; object-fit: contain; }
+footer{padding:60px 0;border-top:1px solid var(--line);}
+footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;color:var(--ink-faint);font-size:13px;font-family:'JetBrains Mono',monospace;}
 
-  .wave-btn-text { display: flex; flex-direction: column; align-items: flex-start; }
-  .wave-btn-text span:first-child { font-size: .7rem; opacity: .8; font-weight: 400; letter-spacing: .08em; }
-  .wave-btn-text span:last-child { font-size: 1.1rem; font-weight: 800; }
-
-  .cta-note {
-    margin-top: 20px;
-    font-size: .72rem;
-    color: var(--muted);
-    line-height: 1.6;
-  }
-  .cta-note a { color: var(--blue); text-decoration: none; }
-
-  /* ── TESTIMONIALS ── */
-  .testi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-  }
-  .testi-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    font-size: .85rem;
-    line-height: 1.6;
-    color: #C0C0D8;
-  }
-  .testi-card .testi-name {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .testi-avatar {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: .9rem;
-    background: rgba(255,255,255,.08);
-  }
-  .testi-info { font-size: .75rem; }
-  .testi-info strong { display: block; color: var(--text); }
-  .testi-info span { color: var(--muted); }
-
-  /* ── FOOTER ── */
-  footer {
-    text-align: center;
-    padding: 32px 24px 48px;
-    font-size: .75rem;
-    color: var(--muted);
-    line-height: 1.8;
-    border-top: 1px solid var(--border);
-  }
-  footer strong { color: var(--text); }
-
-  /* ── URGENCY TICKER ── */
-  .ticker-wrap {
-    background: rgba(255,60,142,.08);
-    border-top: 1px solid rgba(255,60,142,.2);
-    border-bottom: 1px solid rgba(255,60,142,.2);
-    overflow: hidden;
-    padding: 10px 0;
-    margin-bottom: 64px;
-  }
-  .ticker-track {
-    display: flex;
-    gap: 60px;
-    animation: ticker 20s linear infinite;
-    white-space: nowrap;
-    width: max-content;
-  }
-  .ticker-item {
-    font-size: .78rem;
-    color: var(--pink);
-    font-weight: 600;
-    letter-spacing: .08em;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .ticker-dot { width: 6px; height: 6px; background: var(--pink); border-radius: 50%; }
-  @keyframes ticker {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-
-  @media (max-width: 600px) {
-    .ordo-header { flex-direction: column; gap: 16px; }
-    .ordo-item { flex-wrap: wrap; }
-    .ordo-price { margin-left: 42px; }
-    .letter-card { padding: 24px 20px; }
-  }
+.tabs{display:flex;gap:2px;margin-bottom:0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+.tab-btn{
+  background:none;border:none;color:var(--ink-faint);font-family:'JetBrains Mono',monospace;
+  font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;padding:14px 18px;cursor:pointer;
+  border-bottom:2px solid transparent;transition:color .2s,border-color .2s;
+}
+.tab-btn.active{color:var(--ink);border-color:var(--beam);}
+.tab-panel{display:none;padding-top:36px;}
+.tab-panel.active{display:block;}
 </style>
 </head>
 <body>
 
-<!-- ALERT BAR -->
-<div class="alert-bar">
-  🚨 ALERTE SANITAIRE — ÉTUDIANT EN DANGER CRITIQUE — INTERVENTION D'URGENCE REQUISE 🚨
-</div>
-
-<!-- HERO -->
-<div class="hero">
-  <div class="hero-eyebrow">🏥 Cagnotte Urgence Médicale — ESP/UCAD Dakar</div>
-  <p class="hero-sub">
-    Traitement médical homologué contre le burn-out étudiant.<br>
-    <strong>Non remboursé par la Sécurité Sociale. Remboursable par vos dons.</strong>
-  </p>
-
-  <div class="health-block">
-    <div class="health-label">❤️ Santé Mentale du Patient</div>
-    <div class="health-bar-outer">
-      <div class="health-bar-inner"></div>
-    </div>
-    <div class="health-val">7% — ÉTAT CRITIQUE</div>
-  </div>
-</div>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-track" id="ticker">
-    <div class="ticker-item"><div class="ticker-dot"></div>NOUVEAU: Dopamine du patient mesurée à 0%</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>ALERTE: 3 rendus de projet en 2 semaines</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>URGENT: Dernière nuit blanche — 47h sans sommeil</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>RISQUE AVC: Soutenance de projet tutoré imminente</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>SOS: Stock de café épuisé — situation désespérée</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>NOUVEAU: Dopamine du patient mesurée à 0%</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>ALERTE: 3 rendus de projet en 2 semaines</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>URGENT: Dernière nuit blanche — 47h sans sommeil</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>RISQUE AVC: Soutenance de projet tutoré imminente</div>
-    <div class="ticker-item"><div class="ticker-dot"></div>SOS: Stock de café épuisé — situation désespérée</div>
-  </div>
-</div>
-
-<!-- LETTRE -->
-<section>
-  <div class="section-title">📜 Le Message <span>du Patient</span></div>
-  <div class="letter-card">
-    <p>Mes chers camarades,</p>
-    <p>C'est le cœur lourd, les yeux cernés par les nuits blanches de révision et l'âme brisée par la pression incessante de l'ESP que je m'adresse à vous aujourd'hui. Nous partageons les mêmes salles de classe, les mêmes projets interminables, et vous savez à quel point chaque jour passé ici grignote un peu plus notre <strong>santé mentale</strong> et notre <strong>intégrité physique</strong>. Je suis à bout.</p>
-    <p>Les médecins parlent de burn-out, mais <em>la science se trompe</em>. Le seul remède existant, l'unique thérapie capable de réparer mon système nerveux central et de redonner un sens à ma vie, a un nom : <em>GTA 6 (Édition Ultime)</em>.</p>
-    <p>Malheureusement, le système de santé ne rembourse pas encore ce traitement vital. C'est pourquoi je lance cette <strong>cagnotte de la dernière chance</strong>.</p>
-    <p>Je sais que les temps sont durs pour tout le monde, mais pensez à ma survie. Même un ticket de bus ou quelques pièces qui traînent peuvent m'aider à atteindre <em>la lumière au bout du tunnel</em>. Si vous ne le faites pas pour le camarade, faites-le pour <strong>la science</strong> et le soutien psychologique d'un étudiant en détresse.</p>
-    <p>Merci d'avance pour votre immense générosité.</p>
-    <div class="sign">
-      — <em>Que Dieu préserve ce qu'il nous reste de cerveau.</em> 🙏<br>
-      Un étudiant DGI L2SRT, ESP Dakar
+<nav>
+  <div class="wrap">
+    <div class="brand"><span class="brand-dot"></span>DAKAR&nbsp;—&nbsp;GORÉE&nbsp;· FSO 1550NM</div>
+    <div class="nav-links">
+      <a href="#probleme">Le projet</a>
+      <a href="#fibre">La fibre</a>
+      <a href="#fso">La liaison FSO</a>
+      <a href="#simulateur">Simulateur</a>
+      <a href="#pitch">Pitch</a>
     </div>
   </div>
-</section>
+</nav>
 
-<!-- ORDONNANCE -->
-<section>
-  <div class="section-title">💊 L'<span>Ordonnance</span> Médicale</div>
+<!-- ============ HERO ============ -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">DGI · ESP · UCAD — Filière SRT — 2025/2026</div>
+      <h1>Envoyer 10&nbsp;Gbit/s <em>à travers l'air</em>, de Dakar à Gorée.</h1>
+      <p class="hero-lede">Un faisceau laser infrarouge à 1&nbsp;550&nbsp;nm, tiré au-dessus de 3,5&nbsp;km d'océan Atlantique. Aucun câble sous-marin, aucune licence radio — juste de la lumière, et une atmosphère qui n'a pas toujours envie de coopérer.</p>
 
-  <div class="ordonnance">
-    <div class="ordo-header">
-      <div class="ordo-doctor">
-        <strong>Dr. Aziz BURNOUT</strong><br>
-        Spécialiste en Psychologie du Gaming<br>
-        <small>N° ORDRE : ESP-DGI-L2SRT-001</small><br>
-        <small>Dakar — Sénégal</small>
+      <div class="hero-stats">
+        <div class="hero-stat"><b>3,5 km</b><span>Dakar → Gorée</span></div>
+        <div class="hero-stat"><b>1500</b><span>habitants non connectés</span></div>
+        <div class="hero-stat"><b>99,5 %</b><span>disponibilité visée</span></div>
       </div>
-      <div class="ordo-stamp">
-        CABINET<br>DU<br>DR. BURNOUT<br>★ DAKAR ★
-      </div>
+
+      <div class="eyebrow" style="margin-top:38px;">Tester la liaison sous différentes météos</div>
+      <div class="weather-picker" id="weatherPicker"></div>
     </div>
 
-    <div class="ordo-patient">
-      <strong>Patient :</strong> Étudiant ESP/UCAD, DGI — Licence 2 SRT &nbsp;|&nbsp;
-      <strong>Diagnostic :</strong> Burn-out sévère + Carence aiguë en Vice City
+    <div class="scene-box">
+      <svg viewBox="0 0 520 340" width="100%" style="overflow:visible;" id="scene">
+        <!-- sky -->
+        <defs>
+          <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0B1622"/>
+            <stop offset="100%" stop-color="#0E1B28"/>
+          </linearGradient>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#132A34"/>
+            <stop offset="100%" stop-color="#0A1820"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="520" height="230" fill="url(#sky)"/>
+        <rect x="0" y="230" width="520" height="110" fill="url(#sea)"/>
+        <!-- stars -->
+        <g fill="#ffffff" opacity="0.5">
+          <circle cx="60" cy="40" r="1"/><circle cx="120" cy="70" r="1.2"/><circle cx="300" cy="30" r="1"/>
+          <circle cx="380" cy="60" r="1.4"/><circle cx="440" cy="35" r="1"/><circle cx="200" cy="50" r="1"/>
+        </g>
+        <!-- Dakar tower (left) -->
+        <g>
+          <rect x="30" y="150" width="10" height="80" fill="#1C2E3B"/>
+          <rect x="20" y="140" width="30" height="12" fill="#233A49"/>
+          <circle cx="35" cy="140" r="4" fill="var(--beam)" id="emitter"/>
+          <text x="35" y="248" fill="#5B6B79" font-family="JetBrains Mono" font-size="10" text-anchor="middle">DAKAR</text>
+        </g>
+        <!-- Gorée island (right) -->
+        <g>
+          <path d="M450,230 Q470,205 500,215 Q515,222 512,230 Z" fill="#1C2E3B"/>
+          <rect x="470" y="188" width="8" height="27" fill="#233A49"/>
+          <rect x="463" y="180" width="22" height="10" fill="#2B4657"/>
+          <circle cx="474" cy="180" r="4" fill="var(--beam-glow)" id="receiver"/>
+          <text x="480" y="248" fill="#5B6B79" font-family="JetBrains Mono" font-size="10" text-anchor="middle">GORÉE</text>
+        </g>
+        <!-- beam -->
+        <line id="beamLine" x1="39" y1="140" x2="470" y2="182" stroke="var(--beam)" stroke-width="2.5" opacity="0.9"/>
+        <!-- particles (harmattan / brume) -->
+        <g id="particles" opacity="0">
+          <circle class="particle" cx="120" cy="150" r="2" fill="var(--gold)"/>
+          <circle class="particle" cx="180" cy="160" r="1.6" fill="var(--gold)"/>
+          <circle class="particle" cx="240" cy="165" r="2.2" fill="var(--gold)"/>
+          <circle class="particle" cx="300" cy="170" r="1.6" fill="var(--gold)"/>
+          <circle class="particle" cx="360" cy="175" r="2" fill="var(--gold)"/>
+          <circle class="particle" cx="410" cy="178" r="1.4" fill="var(--gold)"/>
+        </g>
+        <!-- distance label -->
+        <text x="255" y="130" fill="#5B6B79" font-family="JetBrains Mono" font-size="10" text-anchor="middle">3.5 KM — LOS</text>
+        <!-- sea line -->
+        <line x1="0" y1="230" x2="520" y2="230" stroke="#233A49" stroke-width="1"/>
+      </svg>
+
+      <div class="scene-readout">
+        <div><span class="k">Scénario</span><span class="v" id="ro-scenario">Ciel dégagé</span></div>
+        <div><span class="k">Visibilité</span><span class="v mono" id="ro-vis">50 km</span></div>
+        <div><span class="k">Atténuation atmosphérique</span><span class="v mono" id="ro-atm">1,05 dB</span></div>
+        <div><span class="k">Marge de liaison restante</span><span class="v mono ok" id="ro-margin">53,2 dB</span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ LE PROBLÈME ============ -->
+<section id="probleme">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Pourquoi ce projet</div>
+      <h2>Gorée est à 3,5 km de Dakar. Et pourtant, hors de portée.</h2>
+      <p>Un câble sous-marin coûte cher et prend plus d'un an à poser. Le Wi-Fi longue portée plafonne à quelques Mbit/s. La FSO propose une troisième voie : un lien optique sans fil, posé en quelques jours.</p>
     </div>
 
-    <div class="ordo-rx">℞</div>
-
-    <div class="ordo-item">
-      <div class="ordo-num">①</div>
-      <div>
-        <div class="ordo-item-title">GTA 6 — Édition Ultime (Dose Principale)</div>
-        <div class="ordo-item-desc">
-          Rouler à toute vitesse dans Vice City constitue la seule rééducation cardiovasculaire
-          capable de compenser le stress des examens. À administrer dès réception.
-          Posologie : sessions illimitées jusqu'à guérison complète.
-        </div>
+    <div class="grid-3">
+      <div class="cell">
+        <span class="tag">Câble sous-marin</span>
+        <h4>2 à 5 milliards FCFA</h4>
+        <p>12 à 18 mois de déploiement, et un risque permanent de rupture par les ancres de bateaux.</p>
       </div>
-      <div class="ordo-price">~79 000 F</div>
-    </div>
-
-    <div class="ordo-item">
-      <div class="ordo-num">②</div>
-      <div>
-        <div class="ordo-item-title">Accès Anticipé (Traitement d'Urgence Absolue)</div>
-        <div class="ordo-item-desc">
-          Chaque jour d'attente supplémentaire constitue un risque d'AVC lié aux rendus de projets.
-          Le patient ne peut pas attendre la sortie standard. Délai thérapeutique critique.
-        </div>
+      <div class="cell">
+        <span class="tag">Wi-Fi longue portée</span>
+        <h4>10–15 Mbit/s au mieux</h4>
+        <p>Sur 3,5 km, très sensible aux obstacles et aux interférences — loin des 50 à 500 Mbit/s estimés nécessaires.</p>
       </div>
-      <div class="ordo-price">Inclus</div>
-    </div>
-
-    <div class="ordo-item">
-      <div class="ordo-num">③</div>
-      <div>
-        <div class="ordo-item-title">Bonus Digitaux de l'Édition (Stimulation Dopaminergique)</div>
-        <div class="ordo-item-desc">
-          Habillages cosmétiques et armes virtuelles de départ indispensables pour stimuler
-          la dopamine du patient, actuellement mesurée à <strong>0%</strong>.
-          Traitement complémentaire obligatoire.
-        </div>
-      </div>
-      <div class="ordo-price">Inclus</div>
-    </div>
-
-    <div class="ordo-footer">
-      <div>
-        <div>Dakar, le <strong>25 Juin 2026</strong></div>
-        <div style="margin-top:4px;font-style:italic;font-size:.72rem;">Signature du médecin</div>
-        <div style="font-family:'Courier Prime',monospace;font-size:1rem;margin-top:2px;transform:skewX(-8deg);display:inline-block;">Dr. A. Burnout</div>
-      </div>
-      <div style="text-align:right;">
-        <div class="ordo-total">TOTAL PROTOCOLE</div>
-        <div style="font-size:1.4rem;font-weight:800;color:#000;">~80 000 FCFA</div>
-        <div style="font-size:.7rem;color:#999;">Non remboursable — Dons uniquement</div>
+      <div class="cell">
+        <span class="tag">FSO — la solution étudiée</span>
+        <h4>10 Gbit/s, sans licence</h4>
+        <p>Un laser infrarouge relie les deux rives. Pas de spectre à louer, déploiement en quelques jours — mais une dépendance totale à la météo.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- PROGRESS -->
-<section>
-  <div class="section-title">📊 État de la <span>Collecte</span></div>
-  <div class="progress-block">
-    <div class="progress-row">
-      <div class="progress-amount" id="amountDisplay">0 FCFA</div>
-      <div class="progress-goal">Objectif : 80 000 FCFA</div>
-    </div>
-    <div class="progress-outer">
-      <div class="progress-inner" id="progressBar"></div>
-    </div>
-    <div class="progress-stats">
-      <div><strong id="donatorsCount">0</strong> généreux camarades</div>
-      <div><strong id="daysLeft">∞</strong> jours avant le burn-out total</div>
-      <div><strong>0%</strong> dopamine restante</div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA WAVE -->
-<section>
-  <div class="cta-block">
-    <div class="cta-pretitle">Méthode de paiement agréée par le Dr. Burnout</div>
-    <div class="cta-title">💸 Faire un Don</div>
-    <div class="cta-sub">
-      Même 500 FCFA peuvent sauver un système nerveux central.
-      Chaque franc compte dans cette lutte pour la survie étudiante.
+<!-- ============ SECTION I — FIBRE ============ -->
+<section id="fibre">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Section I — Le socle</div>
+      <h2>La fibre optique : théorie et matériel de terrain</h2>
+      <p>Avant la FSO, il y a la fibre. Même lumière, même logique de pertes, même vocabulaire — c'est la base de tout métier télécom.</p>
     </div>
 
-    <a href="https://pay.wave.com/m/M_sn_M0kNvI3GqyFs/c/sn/" target="_blank" rel="noopener" class="wave-btn">
-      <div class="wave-logo">
-        <!-- Wave W logo SVG -->
-        <svg width="36" height="36" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-          <rect width="100" height="100" rx="20" fill="#00A8E8"/>
-          <text x="50" y="72" text-anchor="middle" font-family="Arial Black, sans-serif" font-size="58" font-weight="900" fill="white">W</text>
+    <div class="tabs" id="fibreTabs">
+      <button class="tab-btn active" data-tab="structure">Structure &amp; types</button>
+      <button class="tab-btn" data-tab="pertes">Les pertes</button>
+      <button class="tab-btn" data-tab="trousse">Trousse terrain</button>
+      <button class="tab-btn" data-tab="otdr">Lire une trace OTDR</button>
+    </div>
+
+    <!-- TAB: structure -->
+    <div class="tab-panel active" data-tab="structure">
+      <div class="hero-grid" style="grid-template-columns:1fr 1fr;align-items:center;">
+        <div class="fiber-diagram">
+          <svg viewBox="0 0 260 260" width="260">
+            <circle cx="130" cy="130" r="120" fill="#152534" stroke="var(--line-strong)"/>
+            <circle cx="130" cy="130" r="80" fill="#1B3140" stroke="var(--teal)" stroke-width="1"/>
+            <circle cx="130" cy="130" r="30" fill="var(--gold)" opacity="0.85"/>
+            <text x="130" y="24" fill="#93A6B5" font-family="JetBrains Mono" font-size="10" text-anchor="middle">REVÊTEMENT 250µm</text>
+            <text x="130" y="95" fill="#93A6B5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">GAINE 125µm</text>
+            <text x="130" y="134" fill="#0E1826" font-family="JetBrains Mono" font-size="9" text-anchor="middle" font-weight="700">CŒUR 9µm</text>
+          </svg>
+        </div>
+        <div>
+          <table>
+            <tr><th>Type</th><th>Cœur</th><th>Usage</th></tr>
+            <tr><td class="hl">Multimode (MM)</td><td>50 / 62,5 µm</td><td>Réseaux locaux, datacenters — &lt; 2 km</td></tr>
+            <tr><td class="hl">Monomode (SM)</td><td>9 µm</td><td>Télécoms, FTTH, backbone — longues distances</td></tr>
+          </table>
+          <p style="color:var(--ink-dim);font-size:14px;margin-top:18px;">La lumière reste piégée dans le cœur par réflexion totale interne : l'indice du cœur (n1) est légèrement supérieur à celui de la gaine (n2) — comme un rayon qui ne peut pas ressortir de l'eau au-delà d'un certain angle.</p>
+          <p style="color:var(--ink-dim);font-size:14px;">Bande C (1530–1565 nm) : la fenêtre la plus utilisée en télécom, la même longueur d'onde que celle retenue pour la liaison FSO (1550 nm).</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: pertes -->
+    <div class="tab-panel" data-tab="pertes">
+      <div class="hero-grid" style="grid-template-columns:1fr 1fr;">
+        <div>
+          <h4 style="margin-bottom:14px;">Pertes intrinsèques</h4>
+          <table>
+            <tr><td>Absorption (impuretés OH⁻)</td><td class="hl">variable</td></tr>
+            <tr><td>Diffusion de Rayleigh</td><td class="hl">continue</td></tr>
+            <tr><td>@ 850 nm (MM seulement)</td><td class="hl">≈ 2,5 dB/km</td></tr>
+            <tr><td>@ 1310 nm</td><td class="hl">≈ 0,35 dB/km</td></tr>
+            <tr><td>@ 1550 nm — minimum</td><td class="hl">≈ 0,20 dB/km</td></tr>
+          </table>
+        </div>
+        <div>
+          <h4 style="margin-bottom:14px;">Pertes extrinsèques (évitables)</h4>
+          <table>
+            <tr><td>Soudure par fusion</td><td class="hl">0,02 – 0,10 dB</td></tr>
+            <tr><td>Connecteur mécanique</td><td class="hl">0,20 – 0,50 dB</td></tr>
+            <tr><td>Épissure mécanique</td><td class="hl">0,10 – 0,50 dB</td></tr>
+            <tr><td>Rayon de courbure mini (standard)</td><td class="hl">30 mm</td></tr>
+            <tr><td>Rayon de courbure mini (G.657)</td><td class="hl">7,5 mm</td></tr>
+          </table>
+        </div>
+      </div>
+      <p class="mono" style="margin-top:26px;color:var(--ink-dim);font-size:13.5px;background:var(--bg-panel);padding:16px 20px;border:1px solid var(--line);">
+        PR = PT − (α×L) − (N_soudures×perte) − (N_connecteurs×perte) − Marge
+      </p>
+    </div>
+
+    <!-- TAB: trousse -->
+    <div class="tab-panel" data-tab="trousse">
+      <div class="grid-2">
+        <div class="cell">
+          <span class="tag">Préparation du câble</span>
+          <p>Pince coupe-câble / cutter Kevlar · dénudeur de gaine · dénudeur de tube tampon (900 µm)</p>
+        </div>
+        <div class="cell">
+          <span class="tag">Préparation de la fibre nue</span>
+          <p>Pince à dénuder ("No-Nik") · lingettes alcool isopropylique 99% · cliveur de précision (&lt; 0,5°)</p>
+        </div>
+        <div class="cell">
+          <span class="tag">Machines principales</span>
+          <p>Soudeuse à fusion · OTDR · photomètre + source lumineuse · VFL · microscope d'inspection</p>
+        </div>
+        <div class="cell">
+          <span class="tag">Consommables</span>
+          <p>Manchons thermorétractables · cassettes d'épissures · jarretières optiques · bobine d'amorce · kit de nettoyage · capuchons anti-poussière</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: otdr -->
+    <div class="tab-panel" data-tab="otdr">
+      <div class="otdr-wrap">
+        <svg viewBox="0 0 700 220" width="100%">
+          <line x1="30" y1="10" x2="30" y2="190" stroke="var(--line-strong)"/>
+          <line x1="30" y1="190" x2="680" y2="190" stroke="var(--line-strong)"/>
+          <text x="10" y="15" fill="#5B6B79" font-family="JetBrains Mono" font-size="9">dB</text>
+          <text x="640" y="208" fill="#5B6B79" font-family="JetBrains Mono" font-size="9">distance</text>
+          <path d="M35,30 L38,150 L45,30 L120,60 L260,60 L260,80 L400,95 L400,110 L520,150 L560,20 L560,180 L600,180"
+                fill="none" stroke="var(--beam)" stroke-width="2"/>
+          <circle cx="38" cy="150" r="3" fill="var(--gold)"/>
+          <circle cx="260" cy="70" r="3" fill="var(--teal)"/>
+          <circle cx="400" cy="102" r="3" fill="var(--teal)"/>
+          <circle cx="560" cy="20" r="3" fill="var(--danger)"/>
+          <text x="38" y="170" fill="#93A6B5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">①</text>
+          <text x="260" y="95" fill="#93A6B5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">③</text>
+          <text x="400" y="125" fill="#93A6B5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">④</text>
+          <text x="560" y="15" fill="#93A6B5" font-family="JetBrains Mono" font-size="9" text-anchor="middle">⑤</text>
         </svg>
-      </div>
-      <div class="wave-btn-text">
-        <span>Payer via</span>
-        <span>Wave Sénégal</span>
-      </div>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-    </a>
-
-    <div class="cta-note">
-      Paiement sécurisé via Wave Sénégal 🔒<br>
-      <a href="https://pay.wave.com/m/M_sn_M0kNvI3GqyFs/c/sn/" target="_blank">pay.wave.com</a> — Tous les dons, grands ou petits, sont acceptés avec larmes de joie.
-    </div>
-  </div>
-</section>
-
-<!-- FAKE TESTIMONIALS -->
-<section>
-  <div class="section-title">🗣️ Ce que disent les <span>Camarades</span></div>
-  <div class="testi-grid">
-    <div class="testi-card">
-      "J'ai donné 1000 FCFA. Même si je ne comprends pas encore comment GTA guérit un AVC, je fais confiance à la science."
-      <div class="testi-name">
-        <div class="testi-avatar">🧑‍💻</div>
-        <div class="testi-info"><strong>Ibrahima S.</strong><span>L3 Réseaux, ESP</span></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      "J'étais sceptique, mais le burn-out de mon camarade est réel. Les yeux rouges ne mentent pas. J'ai donné."
-      <div class="testi-name">
-        <div class="testi-avatar">👩‍🎓</div>
-        <div class="testi-info"><strong>Fatou D.</strong><span>L2 SRT, DGI</span></div>
-      </div>
-    </div>
-    <div class="testi-card">
-      "Le Pr. FALL nous a dit que le repos est important. Je considère GTA 6 comme du repos médical avancé."
-      <div class="testi-name">
-        <div class="testi-avatar">🎮</div>
-        <div class="testi-info"><strong>Moussa K.</strong><span>M1 Systèmes, UCAD</span></div>
+        <div class="otdr-legend">
+          <div><span class="num">①</span><span>Pic de lancement — impulsion de départ, crée la "zone morte".</span></div>
+          <div><span class="num">②</span><span>Pente régulière — atténuation normale de la fibre, en dB/km.</span></div>
+          <div><span class="num">③</span><span>Petite marche sans pic — une soudure par fusion, propre.</span></div>
+          <div><span class="num">④</span><span>Pic suivi d'une marche — un connecteur ou une épissure mécanique.</span></div>
+          <div><span class="num">⑤</span><span>Gros pic puis bruit — fin de fibre ou cassure nette (~−14 dB).</span></div>
+          <div><span class="num">⑥</span><span>Perte progressive sans reflet — courbure excessive (macrobend).</span></div>
+        </div>
+        <p style="margin-top:20px;color:var(--ink-dim);font-size:13.5px;">Bonne pratique : mesurer une soudure dans les deux sens (A→B et B→A) et moyenner — sinon on peut obtenir un "gainer", une perte apparente négative qui n'existe pas physiquement.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ============ SECTION II — FSO ============ -->
+<section id="fso">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Section II — Étude de cas</div>
+      <h2>La liaison FSO Dakar–Gorée, terme à terme</h2>
+      <p>Même équation maîtresse qu'en fibre — on additionne ce qu'on gagne, on soustrait ce qu'on perd. Sauf qu'ici, le "câble" est un canal atmosphérique de 3,5 km.</p>
+    </div>
+
+    <p class="mono" style="color:var(--ink-dim);font-size:13.5px;background:var(--bg-panel);padding:18px 22px;border:1px solid var(--line);margin-bottom:50px;">
+      PR = PT + GT + GR − LGEO − LATM − LPNT − LSYS
+    </p>
+
+    <div class="stat-strip">
+      <div class="cell"><b>+23 dBm</b><span>Puissance d'émission (200 mW)</span></div>
+      <div class="cell"><b>−38 dBm</b><span>Sensibilité récepteur APD</span></div>
+      <div class="cell"><b>+16,28 dBm</b><span>Puissance reçue, ciel dégagé</span></div>
+      <div class="cell"><b>54,28 dB</b><span>Marge de liaison — chiffre clé</span></div>
+    </div>
+
+    <div class="section-head">
+      <div class="eyebrow">Le canal atmosphérique</div>
+      <h2 style="font-size:28px;">Cinq adversaires du faisceau</h2>
+    </div>
+
+    <div class="grid-3" style="grid-template-columns:repeat(3,1fr);margin-bottom:1px;">
+      <div class="enemy-card">
+        <span class="freq">~48% du temps</span>
+        <h4>Ciel dégagé</h4>
+        <p>V = 50 km · σ ≈ 0,06 dB/km. Marge quasi intacte, 54 dB disponibles.</p>
+        <div class="enemy-bar"><i style="width:6%;"></i></div>
+      </div>
+      <div class="enemy-card">
+        <span class="freq">~37% du temps</span>
+        <h4>Brume marine</h4>
+        <p>Gouttelettes fines, surtout le matin. V = 4–10 km, LATM = 1–7 dB. Facilement absorbé par la marge.</p>
+        <div class="enemy-bar"><i style="width:15%;"></i></div>
+      </div>
+      <div class="enemy-card">
+        <span class="freq">épisodes courts</span>
+        <h4>Pluie tropicale</h4>
+        <p>Hivernage (juillet–sept). À 100 mm/h : σ = 47 dB/km, mais dure 20–30 min, pas des jours.</p>
+        <div class="enemy-bar"><i style="width:90%;"></i></div>
+      </div>
+      <div class="enemy-card">
+        <span class="freq">~2% du temps</span>
+        <h4>Brouillard côtier</h4>
+        <p>Upwelling — eaux froides remontant en surface. Visibilité &lt; 200 m. σ &gt; 50 dB/km, liaison coupée.</p>
+        <div class="enemy-bar"><i style="width:100%;"></i></div>
+      </div>
+      <div class="enemy-card">
+        <span class="freq">l'après-midi</span>
+        <h4>Turbulence thermique</h4>
+        <p>Gradient mer (20°C) / air (35°C). Scintillation du signal, plancher de BER ≈ 10⁻³ même à puissance suffisante.</p>
+        <div class="enemy-bar"><i style="width:55%;"></i></div>
+      </div>
+      <div class="enemy-card">
+        <span class="freq">extrême, rare</span>
+        <h4>Harmattan fort</h4>
+        <p>Poussières sahariennes. V = 0,5 km → LM = −19 dB. La liaison coupe sous V ≈ 0,8 km.</p>
+        <div class="enemy-bar"><i style="width:100%;"></i></div>
+      </div>
+    </div>
+
+    <div style="margin-top:60px;">
+      <table>
+        <tr><th>Scénario</th><th>Visibilité</th><th>σ (dB/km)</th><th>Marge (dB)</th><th>Fréquence</th></tr>
+        <tr><td>S1 — Ciel clair</td><td class="hl">50 km</td><td class="hl">0,06</td><td class="hl">54</td><td>48% du temps</td></tr>
+        <tr><td>S2 — Brume légère</td><td class="hl">10 km</td><td class="hl">0,32</td><td class="hl">53</td><td>22% du temps</td></tr>
+        <tr><td>S3 — Harmattan modéré</td><td class="hl">3 km</td><td class="hl">1,48</td><td class="hl">49</td><td>7% du temps</td></tr>
+        <tr><td>S4 — Harmattan fort</td><td class="hl">0,5 km</td><td class="hl">21</td><td class="hl">−19</td><td>2% du temps (outage)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SIMULATEUR ============ -->
+<section id="simulateur">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Modèle de Kim (2001)</div>
+      <h2>Simuler l'atténuation selon la visibilité</h2>
+      <p>σ [dB/km] = (17 / V) × (λ / 0,55)<sup>−q</sup> — le modèle qui relie l'atténuation atmosphérique à la visibilité météo mesurée à Dakar-Yoff.</p>
+    </div>
+
+    <div class="calc">
+      <div class="calc-controls">
+        <div class="row">
+          <div class="valline"><span>Visibilité météo (V)</span><span id="visOut">10 km</span></div>
+          <input type="range" id="visSlider" min="0.3" max="50" step="0.1" value="10">
+        </div>
+        <p style="font-size:13px;color:var(--ink-faint);">Déplace le curseur : brouillard côtier (0,3 km) → ciel parfaitement clair (50 km). Distance fixée à 3,5 km, λ = 1,55 µm.</p>
+      </div>
+      <div class="calc-out">
+        <div class="out-line"><span class="l">Exposant q</span><span class="v" id="qOut">1,60</span></div>
+        <div class="out-line"><span class="l">σ atténuation</span><span class="v" id="sigmaOut">0,42 dB/km</span></div>
+        <div class="out-line"><span class="l">LATM sur 3,5 km</span><span class="v" id="latmOut">1,47 dB</span></div>
+        <div class="out-line"><span class="l">Marge de liaison restante</span><span class="v big" id="marginOut">52,81 dB</span></div>
+        <span class="status-pill ok" id="statusPill">Liaison stable</span>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:90px;">
+      <div class="eyebrow">Disponibilité annuelle</div>
+      <h2 style="font-size:28px;">Pourquoi l'hybridation FSO/RF change tout</h2>
+      <p>FSO seule : 95,15% de disponibilité, soit 425 heures de panne par an. Objectif télécom : 99,5%. Solution retenue : coupler la FSO à une liaison radio de secours.</p>
+    </div>
+
+    <div class="avail-chart">
+      <div class="avail-row"><span class="lbl">Sans mitigation</span><div class="avail-track"><div class="avail-fill" style="width:95.15%;"></div></div><span class="avail-val">95,15%</span></div>
+      <div class="avail-row"><span class="lbl">FEC seul</span><div class="avail-track"><div class="avail-fill" style="width:95.5%;"></div></div><span class="avail-val">95,50%</span></div>
+      <div class="avail-row"><span class="lbl">Diversité ×2</span><div class="avail-track"><div class="avail-fill" style="width:99.2%;"></div></div><span class="avail-val">99,20%</span></div>
+      <div class="avail-row"><span class="lbl">Hybride FSO/RF</span><div class="avail-track"><div class="avail-fill" style="width:99.996%;background:linear-gradient(90deg,var(--ok),var(--teal));"></div></div><span class="avail-val" style="color:var(--ok);">99,996%</span></div>
+    </div>
+    <p style="margin-top:22px;color:var(--ink-dim);font-size:13.5px;">Ahybride = 1 − (1−A<sub>FSO</sub>)(1−A<sub>RF</sub>) = 1 − (0,0485 × 0,001) = 99,9952% → environ 3,5 heures de panne par an.</p>
+  </div>
+</section>
+
+<!-- ============ PITCH ============ -->
+<section id="pitch">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Bonus — Le pitch en 2 minutes</div>
+      <h2>Comment présenter le projet en soutenance</h2>
+    </div>
+
+    <div class="pitch-panel">
+      <div class="pitch-text">
+        <p>L'île de Gorée est un site patrimonial majeur du Sénégal, à 3,5 km de Dakar. Ses 1 500 habitants et 300 000 visiteurs annuels n'ont pas accès à Internet haut débit. Le câble sous-marin coûte des milliards et prend des années. Ce projet propose une solution alternative : une liaison optique sans fil — la FSO — qui envoie un faisceau laser infrarouge à travers l'air entre Dakar et Gorée.</p>
+        <p>Le problème, c'est l'atmosphère. L'harmattan, les brumes marines, les pluies tropicales perturbent le laser. Ces perturbations ont été étudiées avec des modèles mathématiques validés — le modèle de Kim pour l'atténuation, Gamma-Gamma pour la turbulence — et 34 ans de données météo de la station de Dakar-Yoff.</p>
+        <p>La FSO seule donne 95% de disponibilité, insuffisant pour un service télécom. En couplant la FSO avec une liaison radio de secours, on atteint 99,996% — soit 3,5 heures de panne par an maximum, pour un coût 50 fois inférieur au câble sous-marin.</p>
+      </div>
+    </div>
+
+    <div class="chiffres-grid">
+      <div class="chiffre"><b>3,5 km</b><span>Distance Dakar–Gorée</span></div>
+      <div class="chiffre"><b>1 550 nm</b><span>Longueur d'onde retenue</span></div>
+      <div class="chiffre"><b>10 Gbit/s</b><span>Débit cible</span></div>
+      <div class="chiffre"><b>54,28 dB</b><span>Marge de liaison, ciel dégagé</span></div>
+      <div class="chiffre"><b>V &lt; 0,8 km</b><span>Seuil d'outage</span></div>
+      <div class="chiffre"><b>10 / 15 cm</b><span>Télescopes émission / réception</span></div>
+      <div class="chiffre"><b>3,5 dB</b><span>Pertes de pointage (LPNT)</span></div>
+      <div class="chiffre"><b>99,996%</b><span>Disponibilité, hybride FSO/RF</span></div>
+    </div>
+
+    <div style="margin-top:70px;">
+      <div class="eyebrow">Lexique rapide</div>
+      <div id="lexAccordion"></div>
+    </div>
+  </div>
+</section>
+
 <footer>
-  <div style="font-size:1.5rem;margin-bottom:12px;">🎮 🏥 💊</div>
-  <strong>Cagnotte Urgence Médicale GTA 6</strong><br>
-  Initiée par un étudiant de L2SRT — DGI, École Supérieure Polytechnique, UCAD Dakar<br><br>
-  <span style="font-size:.7rem;">
-    Avertissement : Cette cagnotte est 100% sérieuse médicalement et 0% une blague.<br>
-    Le Dr. Burnout est un médecin agréé par l'Ordre des Gamers du Sénégal.<br>
-    <em>Que Dieu préserve ce qu'il nous reste de cerveau. 🙏</em>
-  </span>
+  <div class="wrap">
+    <span>DGI / ESP / UCAD — Filière Systèmes, Réseaux et Télécommunications — 2025–2026</span>
+    <span>Fibre optique &amp; FSO · Étude de cas Dakar–Gorée</span>
+  </div>
 </footer>
 
 <script>
-  // Animate progress bar on load
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const bar = document.getElementById('progressBar');
-      const amount = document.getElementById('amountDisplay');
-      const count = document.getElementById('donatorsCount');
-      
-      // Animate to a "realistic" low amount (it just started 😅)
-      const targetPct = 4.375; // 3500 / 80000
-      bar.style.width = targetPct + '%';
-
-      // Count up animation
-      let current = 0;
-      const target = 3500;
-      const duration = 1800;
-      const step = target / (duration / 16);
-      const interval = setInterval(() => {
-        current = Math.min(current + step, target);
-        amount.textContent = Math.round(current).toLocaleString('fr-FR') + ' FCFA';
-        if (current >= target) clearInterval(interval);
-      }, 16);
-
-      // Donators
-      let d = 0;
-      const dInterval = setInterval(() => {
-        d++;
-        count.textContent = d;
-        if (d >= 4) clearInterval(dInterval);
-      }, 300);
-
-      // Days countdown (fun)
-      const days = document.getElementById('daysLeft');
-      let day = 99;
-      const daysInterval = setInterval(() => {
-        day--;
-        days.textContent = day;
-        if (day <= 3) {
-          days.style.color = 'var(--red)';
-          clearInterval(daysInterval);
-        }
-      }, 20);
-
-    }, 400);
+/* ---------------- Tabs (Section I) ---------------- */
+document.querySelectorAll('#fibreTabs .tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#fibreTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelector('.tab-panel[data-tab="'+btn.dataset.tab+'"]').classList.add('active');
   });
+});
 
-  // Duplicate ticker for seamless loop
-  const track = document.getElementById('ticker');
-  // Already doubled in HTML for seamless loop
+/* ---------------- Lexique accordion ---------------- */
+const lex = [
+  ["FSO","Free Space Optical — optique en espace libre."],
+  ["LOS","Line of Sight — visibilité directe entre émetteur et récepteur."],
+  ["Cn²","Paramètre de structure de l'indice de réfraction, mesure la turbulence atmosphérique."],
+  ["PAT","Pointing Acquisition Tracking — système d'alignement automatique du faisceau."],
+  ["LM","Link Margin — marge de liaison en dB, l'écart entre puissance reçue et sensibilité du récepteur."],
+  ["BER","Bit Error Rate — taux d'erreurs binaires."],
+  ["APD","Avalanche PhotoDiode — photodiode à avalanche utilisée en réception."],
+  ["OTDR","Optical Time Domain Reflectometer — réflectomètre optique, l'appareil de diagnostic de la fibre."],
+];
+const lexBox = document.getElementById('lexAccordion');
+lex.forEach(([term,def])=>{
+  const item = document.createElement('div');
+  item.className='accordion-item';
+  item.innerHTML = `<div class="accordion-head"><h4>${term}</h4><span class="plus">+</span></div>
+    <div class="accordion-body"><div class="accordion-body-inner"><p>${def}</p></div></div>`;
+  item.querySelector('.accordion-head').addEventListener('click',()=>item.classList.toggle('open'));
+  lexBox.appendChild(item);
+});
+
+/* ---------------- Weather picker in hero ---------------- */
+const weatherScenarios = [
+  {label:"Ciel clair", V:50, color:"#FF5A36", particles:0, width:2.5},
+  {label:"Brume légère", V:10, color:"#FF7A4D", particles:0.35, width:2.5},
+  {label:"Harmattan modéré", V:3, color:"#E08A2E", particles:0.75, width:2},
+  {label:"Harmattan fort", V:0.5, color:"#E6484B", particles:1, width:1},
+];
+const picker = document.getElementById('weatherPicker');
+weatherScenarios.forEach((s,i)=>{
+  const b=document.createElement('button');
+  b.className='weather-btn'+(i===0?' active':'');
+  b.textContent=s.label;
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('.weather-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    applyWeather(s);
+  });
+  picker.appendChild(b);
+});
+
+function kimSigma(V){
+  let q;
+  if(V>6) q=1.6;
+  else if(V>0.5) q=0.16*V+0.34;
+  else q=0;
+  const lambdaRatio = Math.pow(1.55/0.55, -q);
+  return (17/V)*lambdaRatio;
+}
+
+function applyWeather(s){
+  const sigma = kimSigma(s.V);
+  const latm = sigma*3.5;
+  const margin = 54.28 - latm + 1.05; // baseline calibration vs clear-sky ref (~1.05 dB accounted already at V=50)
+  const beam = document.getElementById('beamLine');
+  beam.setAttribute('stroke', s.color);
+  beam.setAttribute('stroke-width', s.width);
+  beam.setAttribute('opacity', s.V<1 ? 0.35 : 0.9);
+  document.getElementById('particles').style.opacity = s.particles;
+
+  document.getElementById('ro-scenario').textContent = s.label;
+  document.getElementById('ro-vis').textContent = (s.V>=1? s.V+" km" : (s.V*1000)+" m");
+  document.getElementById('ro-atm').textContent = latm.toFixed(2)+" dB";
+  const marginEl = document.getElementById('ro-margin');
+  marginEl.textContent = margin.toFixed(1)+" dB";
+  marginEl.className = 'v mono '+(margin>0?'ok':'warn');
+}
+applyWeather(weatherScenarios[0]);
+
+/* ---------------- Kim model calculator (Simulateur section) ---------------- */
+const visSlider = document.getElementById('visSlider');
+function updateCalc(){
+  const V = parseFloat(visSlider.value);
+  document.getElementById('visOut').textContent = V.toFixed(1)+" km";
+  let q;
+  if(V>6) q=1.6;
+  else if(V>0.5) q=0.16*V+0.34;
+  else q=0;
+  const sigma = kimSigma(V);
+  const latm = sigma*3.5;
+  const margin = 54.28 - latm;
+  document.getElementById('qOut').textContent = q.toFixed(2);
+  document.getElementById('sigmaOut').textContent = sigma.toFixed(2)+" dB/km";
+  document.getElementById('latmOut').textContent = latm.toFixed(2)+" dB";
+  document.getElementById('marginOut').textContent = margin.toFixed(2)+" dB";
+  const pill = document.getElementById('statusPill');
+  if(margin>0){
+    pill.textContent="Liaison stable";
+    pill.className="status-pill ok";
+  } else {
+    pill.textContent="Outage — liaison coupée";
+    pill.className="status-pill bad";
+  }
+}
+visSlider.addEventListener('input', updateCalc);
+updateCalc();
 </script>
 </body>
 </html>
